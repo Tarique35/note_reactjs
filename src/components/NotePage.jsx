@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import "../style/NotePage.css";
 import axios from "axios";
 import NoteContext from "../NoteContext";
@@ -12,6 +12,81 @@ const NotePage = () => {
   const navigate = useNavigate();
   const [noteData, setNoteData] = useState();
   const [isDataLoaded, setisDataLoaded] = useState(false);
+  const [undoStack, setUndoStack] = useState([]);
+  const [redoStack, setRedoStack] = useState([]);
+  const debounceRef = useRef(null);
+  const titleRef = useRef(title);
+  const noteTextRef = useRef(noteText);
+  const lastSavedRef = useRef({ title: "", content: "" });
+  const [isPinned, setIspinned] = useState(false);
+
+  const handlePinned = () => {
+    setIspinned(!isPinned);
+    bookmark();
+  };
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+
+    if (name === "title") {
+      setTitle(value);
+    } else if (name === "content") {
+      setNoteText(value);
+    }
+
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+
+    debounceRef.current = setTimeout(() => {
+      const current = {
+        title: value === title ? title : titleRef.current,
+        content: value === noteText ? noteText : noteTextRef.current,
+      };
+
+      const last = lastSavedRef.current;
+
+      // Push to undo stack only if it’s not the same as the last saved state
+      if (current.title !== last.title || current.content !== last.content) {
+        setUndoStack((prev) => [...prev, { title, content: noteText }]);
+        setRedoStack([]);
+        lastSavedRef.current = { title, content: noteText };
+      }
+
+      titleRef.current = title;
+      noteTextRef.current = noteText;
+    }, 500);
+  };
+
+  const handleUndo = () => {
+    if (undoStack.length === 0) return;
+
+    const lastState = undoStack[undoStack.length - 1];
+    setUndoStack((prev) => prev.slice(0, -1));
+
+    // Only push current state to redo if it's different
+    if (title !== lastState.title || noteText !== lastState.content) {
+      setRedoStack((prev) => [...prev, { title, content: noteText }]);
+    }
+
+    setTitle(lastState.title);
+    setNoteText(lastState.content);
+    lastSavedRef.current = {
+      title: lastState.title,
+      content: lastState.content,
+    };
+  };
+
+  const handleRedo = () => {
+    if (redoStack.length === 0) return;
+
+    const nextState = redoStack[redoStack.length - 1];
+    setRedoStack((prev) => prev.slice(0, -1));
+
+    setUndoStack((prev) => [...prev, { title: title, content: noteText }]);
+
+    setTitle(nextState.title);
+    setNoteText(nextState.content);
+    lastSavedRef.current = nextState;
+  };
 
   const query = new URLSearchParams(useLocation().search);
   const id = query.get("id"); // Get the "id" from the URL
@@ -70,6 +145,8 @@ const NotePage = () => {
       setNoteText(response.data.content);
       console.log("noteText", response.data.content);
       setisDataLoaded(true);
+      const isBookmark = response.data.bookmarked;
+      setIspinned(isBookmark);
     } catch (error) {
       console.error("Error fetching the selected note:", error);
     }
@@ -99,18 +176,34 @@ const NotePage = () => {
     }
   };
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-
-    if (name == "title") {
-      setTitle(value);
-    } else if (name == "content") {
-      setNoteText(value);
+  const bookmark = async () => {
+    const body = {
+      id: id,
+    };
+    try {
+      const response = await axios.post(`${loca}/bookmark`, body, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      const isBookmark = response.data.bookmarked;
+      setIspinned(isBookmark);
+    } catch (error) {
+      console.error("Error bookmarking the note:", error);
     }
-    // if (id) {
-    //   updateNote();
-    // }
   };
+  // const handleChange = (e) => {
+  //   const { name, value } = e.target;
+
+  //   if (name == "title") {
+  //     setTitle(value);
+  //   } else if (name == "content") {
+  //     setNoteText(value);
+  //   }
+  //   // if (id) {
+  //   //   updateNote();
+  //   // }
+  // };
 
   useEffect(() => {
     if (id && isDataLoaded) {
@@ -120,11 +213,45 @@ const NotePage = () => {
   return (
     <>
       <div className="notes-app">
-        <h1>Notes</h1>
+        <div className="note-actions mb-2">
+          <button onClick={handleUndo} disabled={undoStack.length === 0}>
+            Undo
+          </button>
+          <button onClick={handleRedo} disabled={redoStack.length === 0}>
+            Redo
+          </button>
+        </div>
+        <div className="d-flex justify-content-between">
+          <div></div>
+          <h1>Notes</h1>
+          {isPinned ? (
+            <i
+              class="bi bi-pin-fill"
+              style={{
+                marginTop: "12px",
+                fontSize: "25px",
+                marginRight: "10px",
+                cursor: "pointer",
+              }}
+              onClick={handlePinned}
+            ></i>
+          ) : (
+            <i
+              class="bi bi-pin"
+              style={{
+                marginTop: "12px",
+                fontSize: "25px",
+                marginRight: "10px",
+                cursor: "pointer",
+              }}
+              onClick={handlePinned}
+            ></i>
+          )}
+        </div>
         <div>
           <div>
             <input
-              className="w-100"
+              className="w-100 p-2 mb-2"
               type="text"
               name="title"
               placeholder="Title"
@@ -144,7 +271,7 @@ const NotePage = () => {
               }}
             />
             {/* <button onClick={addNote}>Add Note</button> */}
-            <button onClick={saveNote}>Add Note</button>
+            {/* <button onClick={saveNote}>Add Note</button> */}
           </div>
         </div>
         <div className="notes-grid">

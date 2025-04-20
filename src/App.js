@@ -5,6 +5,7 @@ import SignUp from "./components/SignUp";
 import Login from "./components/Login";
 import NotePage from "./components/NotePage";
 import MainComponent from "./components/MainComponent";
+import 'bootstrap-icons/font/bootstrap-icons.css';
 
 function App() {
   return (

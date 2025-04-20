@@ -153,22 +153,17 @@ const HomePage = () => {
   return (
     <div>
       <Navbar />
-      <div style={{ display: "flex" }}>
-        <span
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            background: "yellow",
-          }}
-          onClick={() => {
-            createNewNote();
-          }}
-        >
-          <i class="fa-solid fa-plus" style={{ color: "black" }}></i>
-          Add Note
-        </span>
+      <div className="" style={{ display: "flex" }}>
         <div className="d-flex options-margin">
+          <span
+            className="add-btn"
+            onClick={() => {
+              createNewNote();
+            }}
+          >
+            <i class="fa-solid fa-plus" style={{ color: "black" }}></i>
+            Add Note
+          </span>
           <div
             className={activeButtons === "all" ? "active" : ""}
             onClick={() => handleButtons("all")}
@@ -212,10 +207,22 @@ const HomePage = () => {
               <div
                 key={index}
                 className="notes-div"
+                style={{ cursor: "pointer" }}
                 onClick={() => {
                   getSelectedNote(datas);
                 }}
               >
+                {console.log("checkbook", datas[index])}
+                {datas.bookmarked && (
+                  <div style={{ position: "absolute", right: "10px" }}>
+                    <i
+                      class="bi bi-pin-fill"
+                      style={{
+                        fontSize: "25px",
+                      }}
+                    ></i>
+                  </div>
+                )}
                 <h3>{datas.title}</h3>
                 <p>{datas.content}</p>
               </div>

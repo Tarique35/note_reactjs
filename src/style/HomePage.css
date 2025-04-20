@@ -16,7 +16,19 @@
 .options-margin div:hover {
   opacity: 0.9;
 }
-
+.add-btn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: yellow;
+  padding: 8px 16px;
+  border-radius: 10px;
+  margin-left: 5px;
+  cursor: pointer;
+}
+.add-btn:hover {
+  background: #ffff6a;
+}
 .notes-card {
   display: grid;
   /* grid-template-columns: repeat(3, 1fr); */
@@ -24,6 +36,7 @@
   gap: 8px;
 }
 .notes-div {
+  position: relative;
   padding: 5px 13px;
   border: 1px solid black;
   border-radius: 5px;
@@ -33,4 +46,5 @@
   display: -webkit-box; /* Required for webkit browsers */
   -webkit-box-orient: vertical; /* Required for webkit browsers */
   -webkit-line-clamp: 15;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }

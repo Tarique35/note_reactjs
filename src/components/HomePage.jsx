@@ -108,20 +108,26 @@ const HomePage = () => {
       console.error("Error creating a new note:", error);
     }
   };
+
+  const formatDate = (isoString) => {
+    const date = new Date(isoString);
+    const day = String(date.getDate()).padStart(2, "0");
+    const month = String(date.getMonth() + 1).padStart(2, "0"); // Months are 0-indexed
+    const year = date.getFullYear();
+    return `${day}-${month}-${year}`;
+  };
+
   return (
-    <div>
+    <div className="mx-auto" style={{ width: "80%" }}>
       <Navbar />
-      <div className="" style={{ display: "flex" }}>
-        <div className="d-flex options-margin">
-          <span
-            className="add-btn"
-            onClick={() => {
-              createNewNote();
-            }}
-          >
-            <i class="fa-solid fa-plus" style={{ color: "black" }}></i>
-            Add Note
-          </span>
+      <div
+        className="mx-2"
+        style={{ display: "flex", justifyContent: "space-between" }}
+      >
+        <div
+          className="d-flex options-margin"
+          style={{ background: "hsl(210deg 40% 96.08%)", padding: "4px" }}
+        >
           <div
             className={activeButtons === "all" ? "active" : ""}
             onClick={() => handleButtons("all")}
@@ -141,8 +147,17 @@ const HomePage = () => {
             Important
           </div> */}
         </div>
+        <span
+          className="add-btn"
+          onClick={() => {
+            createNewNote();
+          }}
+        >
+          <i class="fa-solid fa-plus" style={{ color: "white" }}></i>
+          Add Note
+        </span>
       </div>
-      <div className="notes-card mx-2 py-3">
+      <div className="notes-card mx-2 py-3 w-100">
         {/* {data &&
           data.map((datas, index) => (
             <>
@@ -161,11 +176,16 @@ const HomePage = () => {
         {noteData &&
           noteData.map((datas, index) => (
             <>
-              {console.log(datas)}
               <div
                 key={index}
                 className="notes-div"
-                style={{ cursor: "pointer" }}
+                style={{
+                  cursor: "pointer",
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "space-between",
+                  width: "90%",
+                }}
                 onClick={() => {
                   getSelectedNote(datas);
                 }}
@@ -180,8 +200,13 @@ const HomePage = () => {
                     ></i>
                   </div>
                 )}
-                <h3>{datas.title}</h3>
-                <p>{datas.content}</p>
+                <div>
+                  <h3>{datas.title}</h3>
+                  <p>{datas.content}</p>
+                </div>
+                <p style={{ fontSize: "12px", color: "#747474" }}>
+                  {formatDate(datas.updatedAt)}
+                </p>
               </div>
             </>
           ))}

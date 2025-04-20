@@ -224,29 +224,32 @@ const NotePage = () => {
         <div className="d-flex justify-content-between">
           <div></div>
           <h1>Notes</h1>
-          {isPinned ? (
-            <i
-              class="bi bi-pin-fill"
-              style={{
-                marginTop: "12px",
-                fontSize: "25px",
-                marginRight: "10px",
-                cursor: "pointer",
-              }}
-              onClick={handlePinned}
-            ></i>
-          ) : (
-            <i
-              class="bi bi-pin"
-              style={{
-                marginTop: "12px",
-                fontSize: "25px",
-                marginRight: "10px",
-                cursor: "pointer",
-              }}
-              onClick={handlePinned}
-            ></i>
-          )}
+          <div>
+            <i class="fa fa-trash" aria-hidden="true"></i>
+            {isPinned ? (
+              <i
+                class="fas fa-bookmark"
+                style={{
+                  marginTop: "15px",
+                  fontSize: "25px",
+                  marginRight: "10px",
+                  cursor: "pointer",
+                }}
+                onClick={handlePinned}
+              ></i>
+            ) : (
+              <i
+                class="far fa-bookmark"
+                style={{
+                  marginTop: "15px",
+                  fontSize: "25px",
+                  marginRight: "10px",
+                  cursor: "pointer",
+                }}
+                onClick={handlePinned}
+              ></i>
+            )}
+          </div>
         </div>
         <div>
           <div>

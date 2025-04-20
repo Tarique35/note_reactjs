@@ -4,6 +4,7 @@ import "../style/HomePage.css";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import axios from "axios";
 import NoteContext from "../NoteContext";
+import { formatDate } from "../Small Components/Functions";
 
 const HomePage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -109,13 +110,13 @@ const HomePage = () => {
     }
   };
 
-  const formatDate = (isoString) => {
-    const date = new Date(isoString);
-    const day = String(date.getDate()).padStart(2, "0");
-    const month = String(date.getMonth() + 1).padStart(2, "0"); // Months are 0-indexed
-    const year = date.getFullYear();
-    return `${day}-${month}-${year}`;
-  };
+  // const formatDate = (isoString) => {
+  //   const date = new Date(isoString);
+  //   const day = String(date.getDate()).padStart(2, "0");
+  //   const month = String(date.getMonth() + 1).padStart(2, "0"); // Months are 0-indexed
+  //   const year = date.getFullYear();
+  //   return `${day}-${month}-${year}`;
+  // };
 
   return (
     <div className="mx-auto" style={{ width: "80%" }}>

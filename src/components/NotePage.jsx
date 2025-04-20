@@ -3,6 +3,7 @@ import "../style/NotePage.css";
 import axios from "axios";
 import NoteContext from "../NoteContext";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { formatDate } from "../Small Components/Functions";
 
 const NotePage = () => {
   const [notes, setNotes] = useState([]);
@@ -19,6 +20,7 @@ const NotePage = () => {
   const noteTextRef = useRef(noteText);
   const lastSavedRef = useRef({ title: "", content: "" });
   const [isPinned, setIspinned] = useState(false);
+  const [date, setDate] = useState();
 
   const handlePinned = () => {
     setIspinned(!isPinned);
@@ -147,6 +149,7 @@ const NotePage = () => {
       setisDataLoaded(true);
       const isBookmark = response.data.bookmarked;
       setIspinned(isBookmark);
+      setDate(response.data.updatedAt);
     } catch (error) {
       console.error("Error fetching the selected note:", error);
     }
@@ -186,6 +189,8 @@ const NotePage = () => {
           "Content-Type": "application/json",
         },
       });
+      console.log("data: ", response.data);
+
       const isBookmark = response.data.bookmarked;
       setIspinned(isBookmark);
     } catch (error) {
@@ -222,7 +227,7 @@ const NotePage = () => {
           </button>
         </div>
         <div className="d-flex justify-content-between">
-          <div></div>
+          {date && <p className="mt-3 ms-2" style={{fontSize:"18px"}}>{formatDate(date)}</p>}
           <h1>Notes</h1>
           <div>
             <i class="fa fa-trash" aria-hidden="true"></i>

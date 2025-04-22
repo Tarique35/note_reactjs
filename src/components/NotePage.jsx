@@ -4,6 +4,7 @@ import axios from "axios";
 import NoteContext from "../NoteContext";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { formatDate } from "../Small Components/Functions";
+import DeleteModal from "../Small Components/DeleteModal";
 
 const NotePage = () => {
   const [notes, setNotes] = useState([]);
@@ -21,6 +22,35 @@ const NotePage = () => {
   const lastSavedRef = useRef({ title: "", content: "" });
   const [isPinned, setIspinned] = useState(false);
   const [date, setDate] = useState();
+  const [showModal, setShowModal] = useState(false);
+
+  const handleDeleteModal = () => {
+    setShowModal(true);
+  };
+
+  const deleteNote = async () => {
+    const body = {
+      id: id,
+    };
+    try {
+      const response = await axios.post(loca + "/deletenote", body, {
+        headers: { "Content-Type": "application/json" },
+      });
+      console.log("response", response.data);
+    } catch (error) {
+      console.log("axios error at delete: ", error);
+    }
+  };
+  const handleConfirm = () => {
+    deleteNote();
+    setShowModal(false);
+    navigate("/", { replace: true });
+    window.location.reload(); //this will refresh the page so that our getallnotes record got updated.
+  };
+
+  const handleCancel = () => {
+    setShowModal(false);
+  };
 
   const handlePinned = () => {
     setIspinned(!isPinned);
@@ -101,10 +131,10 @@ const NotePage = () => {
   };
   console.log("array: ", notes);
 
-  const deleteNote = (index) => {
-    const updatedNotes = notes.filter((_, i) => i !== index);
-    setNotes(updatedNotes);
-  };
+  // const deleteNote = (index) => {
+  //   const updatedNotes = notes.filter((_, i) => i !== index);
+  //   setNotes(updatedNotes);
+  // };
 
   const saveNote = () => {
     const body = {
@@ -227,10 +257,19 @@ const NotePage = () => {
           </button>
         </div>
         <div className="d-flex justify-content-between">
-          {date && <p className="mt-3 ms-2" style={{fontSize:"18px"}}>{formatDate(date)}</p>}
+          {date && (
+            <p className="mt-3 ms-2" style={{ fontSize: "18px" }}>
+              {formatDate(date)}
+            </p>
+          )}
           <h1>Notes</h1>
           <div>
-            <i class="fa fa-trash" aria-hidden="true"></i>
+            <i
+              class="fa fa-trash me-3"
+              aria-hidden="true"
+              onClick={handleDeleteModal}
+              style={{ fontSize: "18px", cursor: "pointer" }}
+            ></i>
             {isPinned ? (
               <i
                 class="fas fa-bookmark"
@@ -282,15 +321,21 @@ const NotePage = () => {
             {/* <button onClick={saveNote}>Add Note</button> */}
           </div>
         </div>
-        <div className="notes-grid">
+        {/* <div className="notes-grid">
           {notes.map((note, index) => (
             <div className="note-card" key={index}>
               <p>{note}</p>
               <button onClick={() => deleteNote(index)}>Delete</button>
             </div>
           ))}
-        </div>
+        </div> */}
       </div>
+
+      <DeleteModal
+        show={showModal}
+        onConfirm={handleConfirm}
+        onCancel={handleCancel}
+      />
     </>
   );
 };

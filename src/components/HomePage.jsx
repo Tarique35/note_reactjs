@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from "react";
 import Navbar from "./Navbar";
 import "../style/HomePage.css";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import axios from "axios";
 import NoteContext from "../NoteContext";
 import { formatDate } from "../Small Components/Functions";
@@ -11,7 +11,7 @@ const HomePage = () => {
   const initialButtonValue = searchParams.get("value") || "all"; // Default to "all"
   const [activeButtons, setActiveButtons] = useState(initialButtonValue);
   const [noteData, setNoteData] = useState();
-
+  const location = useLocation();
   const navigate = useNavigate();
 
   const { loca } = useContext(NoteContext);

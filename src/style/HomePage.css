@@ -1,0 +1,56 @@
+.options-margin {
+  margin-top: 10px;
+}
+.options-margin div {
+  padding: 8px 16px;
+  /* border: 1px solid black; */
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+  color: hsl(215.38deg 16.32% 46.86%);
+}
+.options-margin .active {
+  /* background: green; */
+  background: white;
+  color: black;
+}
+.options-margin div:hover {
+  opacity: 0.9;
+}
+.add-btn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: hsl(222.2 47.4% 11.2%);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 2px;
+  margin-left: 5px;
+  cursor: pointer;
+  height: 46px;
+}
+.add-btn:hover {
+  background: #232323;
+}
+.notes-card {
+  display: grid;
+  /* grid-template-columns: repeat(3, 1fr); */
+  grid-template-columns: repeat(auto-fill, minmax(24%, 1fr));
+  gap: 8px;
+}
+.notes-div {
+  position: relative;
+  padding: 5px 13px;
+  border: 1px solid black;
+  border-radius: 5px;
+  max-height: 100%; /* Set the desired maximum height */
+  overflow: hidden; /* Hide the overflow */
+  text-overflow: ellipsis; /* Add ellipsis for text overflow */
+  display: -webkit-box; /* Required for webkit browsers */
+  -webkit-box-orient: vertical; /* Required for webkit browsers */
+  -webkit-line-clamp: 15;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+.notes-div:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}

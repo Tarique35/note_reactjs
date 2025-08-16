@@ -7,10 +7,10 @@ import { formatDate } from "../Small Components/Functions";
 import DeleteModal from "../Small Components/DeleteModal";
 
 const NotePage = () => {
+  const { loca, tokenName } = useContext(NoteContext);
   const [notes, setNotes] = useState([]);
   const [title, setTitle] = useState("");
   const [noteText, setNoteText] = useState("");
-  const { loca } = useContext(NoteContext);
   const navigate = useNavigate();
   const [noteData, setNoteData] = useState();
   const [isDataLoaded, setisDataLoaded] = useState(false);
@@ -24,6 +24,8 @@ const NotePage = () => {
   const [date, setDate] = useState();
   const [showModal, setShowModal] = useState(false);
 
+  const noteToken = localStorage.getItem(tokenName);
+
   const handleDeleteModal = () => {
     setShowModal(true);
   };
@@ -34,7 +36,10 @@ const NotePage = () => {
     };
     try {
       const response = await axios.post(loca + "/deletenote", body, {
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${noteToken}`,
+        },
       });
       console.log("response", response.data);
     } catch (error) {
@@ -147,6 +152,7 @@ const NotePage = () => {
       .post(loca + "/save/note", body, {
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${noteToken}`,
         },
       })
       .then((resp) => {
@@ -168,6 +174,7 @@ const NotePage = () => {
         {
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${noteToken}`,
           },
         }
       );
@@ -201,6 +208,7 @@ const NotePage = () => {
       const response = await axios.post(`${loca}/update/existingnote`, body, {
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${noteToken}`,
         },
       });
       console.log(response.data);
@@ -217,6 +225,7 @@ const NotePage = () => {
       const response = await axios.post(`${loca}/bookmark`, body, {
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${noteToken}`,
         },
       });
       console.log("data: ", response.data);

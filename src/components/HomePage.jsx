@@ -52,7 +52,12 @@ const HomePage = () => {
         const resp = await axios.post(
           `${loca}/get/bookmarks`,
           {},
-          { headers: { "Content-Type": "application/json" } }
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${noteToken}`,
+            },
+          }
         );
         setNoteData(resp.data || []);
       }
@@ -70,7 +75,10 @@ const HomePage = () => {
   const getSelectedNote = async (datas) => {
     try {
       const response = await axios.post(`${loca}/selected/note`, datas, {
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${noteToken}`,
+        },
       });
       navigate(`/note?id=${response.data.id}`);
     } catch (error) {
@@ -82,7 +90,10 @@ const HomePage = () => {
     const body = { title: "", content: "" };
     try {
       const response = await axios.post(`${loca}/save/note`, body, {
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${noteToken}`,
+        },
       });
       navigate(`/note?id=${response.data.id}`);
     } catch (error) {

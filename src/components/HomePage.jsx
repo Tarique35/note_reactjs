@@ -102,89 +102,94 @@ const HomePage = () => {
   };
 
   return (
-    <div className="mx-auto w-4/5">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
       <Navbar />
 
-      {/* Top controls */}
-      <div className="flex justify-between items-center mt-6 mb-4 px-2">
-        <div className="flex items-center gap-2 bg-slate-50 p-1 rounded">
-          <button
-            className={`px-3 py-1 rounded-full text-sm font-medium transition-colors ${
-              activeButtons === "all"
-                ? "bg-blue-600 text-white"
-                : "text-gray-700 hover:bg-gray-100"
-            }`}
-            onClick={() => handleButtons("all")}
-          >
-            All
-            {noteData && activeButtons === "all" ? ` (${noteData.length})` : ""}
-          </button>
+      <div className="mx-auto max-w-6xl px-6 pt-10">
+        {/* Top controls */}
+        <div className="flex justify-between items-center mb-10">
+          {/* Filter Buttons */}
+          <div className="flex items-center gap-4">
+            <button
+              className={`flex items-center gap-2 px-5 py-2 rounded-full text-sm font-medium transition-all ${
+                activeButtons === "all"
+                  ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-md"
+                  : "bg-white border border-gray-200 text-gray-600 hover:bg-gray-50"
+              }`}
+              onClick={() => handleButtons("all")}
+            >
+              <i className="fa-solid fa-layer-group"></i>
+              All {activeButtons === "all" ? `(${noteData.length})` : ""}
+            </button>
 
-          <button
-            className={`px-3 py-1 rounded-full text-sm font-medium transition-colors ${
-              activeButtons === "bookmark"
-                ? "bg-blue-600 text-white"
-                : "text-gray-700 hover:bg-gray-100"
-            }`}
-            onClick={() => handleButtons("bookmark")}
-          >
-            Bookmarked
-            {noteData && activeButtons === "bookmark"
-              ? ` (${noteData.length})`
-              : ""}
-          </button>
+            <button
+              className={`flex items-center gap-2 px-5 py-2 rounded-full text-sm font-medium transition-all ${
+                activeButtons === "bookmark"
+                  ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-md"
+                  : "bg-white border border-gray-200 text-gray-600 hover:bg-gray-50"
+              }`}
+              onClick={() => handleButtons("bookmark")}
+            >
+              <i className="fa-solid fa-bookmark"></i>
+              Bookmarked
+              {activeButtons === "bookmark" ? ` (${noteData.length})` : ""}
+            </button>
+          </div>
 
-          {/* Example for future filters
-          <button className="px-3 py-1 rounded-full text-sm text-gray-700 hover:bg-gray-100">Important</button>
-          */}
+          {/* Add Note */}
+          <button
+            onClick={createNewNote}
+            className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-6 py-2.5 rounded-full shadow-lg transition-all hover:scale-105"
+          >
+            <i className="fa-solid fa-circle-plus"></i>
+            <span className="font-medium">Add Note</span>
+          </button>
         </div>
 
-        <button
-          onClick={createNewNote}
-          className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded shadow"
-        >
-          <i className="fa-solid fa-plus" aria-hidden="true"></i>
-          <span>Add Note</span>
-        </button>
-      </div>
+        {/* Notes list */}
+        <div>
+          {noteData && noteData.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              {noteData.map((datas, index) => (
+                <div
+                  key={datas.id || index}
+                  onClick={() => getSelectedNote(datas)}
+                  className="relative cursor-pointer bg-white p-6 rounded-2xl shadow-md hover:shadow-xl hover:-translate-y-1 transition-all border border-gray-100"
+                >
+                  {datas.bookmarked && (
+                    <div className="absolute right-4 top-4 text-yellow-500">
+                      <i className="fa-solid fa-thumbtack"></i>
+                    </div>
+                  )}
 
-      {/* Notes list */}
-      <div className="bg-white rounded-lg shadow-sm p-4">
-        {noteData && noteData.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {noteData.map((datas, index) => (
-              <div
-                key={datas.id || index}
-                onClick={() => getSelectedNote(datas)}
-                className="relative cursor-pointer bg-gray-50 p-4 rounded-lg shadow hover:shadow-md transition"
-              >
-                {datas.bookmarked && (
-                  <div className="absolute right-3 top-3 text-gray-500">
-                    <i
-                      className="bi bi-pin-fill text-xl"
-                      aria-hidden="true"
-                    ></i>
+                  <div className="mb-4">
+                    <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+                      <i className="fa-regular fa-note-sticky text-blue-500"></i>
+                      {datas.title || "Untitled"}
+                    </h3>
+                    <p className="mt-2 text-gray-600 line-clamp-3 text-sm leading-relaxed">
+                      {datas.content}
+                    </p>
                   </div>
-                )}
 
-                <div className="mb-3">
-                  <h3 className="text-lg font-semibold">
-                    {datas.title || "Untitled"}
-                  </h3>
-                  <p className="mt-1 text-gray-700 line-clamp-3">
-                    {datas.content}
+                  <p className="text-xs text-gray-400 flex items-center gap-1">
+                    <i className="fa-regular fa-clock"></i>
+                    {formatDate(datas.updatedAt)}
                   </p>
                 </div>
-
-                <p className="text-xs text-gray-500">
-                  {formatDate(datas.updatedAt)}
-                </p>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div className="py-10 text-center text-gray-500">No notes found.</div>
-        )}
+              ))}
+            </div>
+          ) : (
+            <div className="py-20 text-center text-gray-500">
+              <i className="fa-regular fa-clipboard text-6xl text-gray-400 mb-4"></i>
+              <p className="text-lg">No notes yet</p>
+              <p className="text-sm text-gray-400 mt-1">
+                Click <i className="fa-solid fa-circle-plus"></i> to add your
+                first note
+              </p>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

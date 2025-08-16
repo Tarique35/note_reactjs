@@ -256,95 +256,63 @@ const NotePage = () => {
   }, [title, noteText]);
   return (
     <>
-      <div className="notes-app">
-        <div className="note-actions mb-2">
-          <button onClick={handleUndo} disabled={undoStack.length === 0}>
-            Undo
-          </button>
-          <button onClick={handleRedo} disabled={redoStack.length === 0}>
-            Redo
-          </button>
-        </div>
-        <div className="d-flex justify-content-between">
-          {date && (
-            <p className="mt-3 ms-2" style={{ fontSize: "18px" }}>
-              {formatDate(date)}
-            </p>
-          )}
-          <h1>Notes</h1>
+      <div className="max-w-5xl mx-auto px-6 py-8">
+        {/* Header Row */}
+        <div className="flex justify-between items-center mb-6">
           <div>
-            <i
-              class="fa fa-trash me-3"
-              aria-hidden="true"
-              onClick={handleDeleteModal}
-              style={{ fontSize: "18px", cursor: "pointer" }}
-            ></i>
-            {isPinned ? (
-              <i
-                class="fas fa-bookmark"
-                style={{
-                  marginTop: "15px",
-                  fontSize: "25px",
-                  marginRight: "10px",
-                  cursor: "pointer",
-                }}
-                onClick={handlePinned}
-              ></i>
-            ) : (
-              <i
-                class="far fa-bookmark"
-                style={{
-                  marginTop: "15px",
-                  fontSize: "25px",
-                  marginRight: "10px",
-                  cursor: "pointer",
-                }}
-                onClick={handlePinned}
-              ></i>
+            {date && (
+              <p className="text-sm text-gray-400">
+                Last edited • {formatDate(date)}
+              </p>
             )}
           </div>
-        </div>
-        <div>
-          <div>
-            <input
-              className="w-100 p-2 mb-2"
-              type="text"
-              name="title"
-              placeholder="Title"
-              value={title}
-              onChange={(e) => {
-                handleChange(e);
-              }}
-            />
-          </div>
-          <div className="note-input">
-            <textarea
-              placeholder="Write a note..."
-              value={noteText}
-              name="content"
-              onChange={(e) => {
-                handleChange(e);
-              }}
-            />
-            {/* <button onClick={addNote}>Add Note</button> */}
-            {/* <button onClick={saveNote}>Add Note</button> */}
+          <div className="flex items-center space-x-5">
+            <i
+              className="fa fa-trash text-gray-500 hover:text-red-500 cursor-pointer text-lg"
+              onClick={handleDeleteModal}
+            ></i>
+            <i
+              className={`${
+                isPinned ? "fas" : "far"
+              } fa-bookmark text-yellow-500 cursor-pointer text-xl`}
+              onClick={handlePinned}
+            ></i>
           </div>
         </div>
-        {/* <div className="notes-grid">
-          {notes.map((note, index) => (
-            <div className="note-card" key={index}>
-              <p>{note}</p>
-              <button onClick={() => deleteNote(index)}>Delete</button>
-            </div>
-          ))}
-        </div> */}
-      </div>
 
-      <DeleteModal
-        show={showModal}
-        onConfirm={handleConfirm}
-        onCancel={handleCancel}
-      />
+        {/* Note Editor */}
+        <div className="bg-white shadow-lg rounded-xl p-6 border border-gray-100">
+          {/* Title */}
+          <label className="block text-sm font-medium text-gray-600 mb-1">
+            Title
+          </label>
+          <input
+            type="text"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            placeholder="Enter a title..."
+            className="w-full text-2xl font-semibold border-b border-gray-300 focus:border-blue-500 focus:outline-none py-2 mb-6"
+          />
+
+          {/* Content */}
+          <label className="block text-sm font-medium text-gray-600 mb-1">
+            Content
+          </label>
+          <textarea
+            value={noteText}
+            onChange={(e) => setNoteText(e.target.value)}
+            placeholder="Write your note here..."
+            className="w-full min-h-[60vh] p-4 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 resize-none text-base leading-relaxed"
+          ></textarea>
+        </div>
+
+        {/* Delete Modal */}
+        <DeleteModal
+          show={showModal}
+          onConfirm={handleConfirm}
+          onCancel={handleCancel}
+        />
+      </div>
     </>
   );
 };

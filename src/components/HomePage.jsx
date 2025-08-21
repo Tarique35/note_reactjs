@@ -13,9 +13,7 @@ const HomePage = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const { loca, tokenName } = useContext(NoteContext);
-
-  const noteToken = localStorage.getItem(tokenName);
+  const { loca, tokenName, noteToken } = useContext(NoteContext);
 
   useEffect(() => {
     // Ensure the query param exists and keep local active state in sync
@@ -102,19 +100,21 @@ const HomePage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+    <div className="min-h-screen">
       <Navbar />
-
       <div className="mx-auto max-w-6xl px-6 pt-10">
         {/* Top controls */}
         <div className="flex justify-between items-center mb-10">
           {/* Filter Buttons */}
           <div className="flex items-center gap-4">
             <button
-              className={`flex items-center gap-2 px-5 py-2 rounded-full text-sm font-medium transition-all ${
-                activeButtons === "all"
-                  ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-md"
-                  : "bg-white border border-gray-200 text-gray-600 hover:bg-gray-50"
+              // className={`flex items-center gap-2 px-5 py-2 rounded-full text-sm font-medium transition-all ${
+              //   activeButtons === "all"
+              //     ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-md"
+              //     : "bg-white border border-gray-200 text-gray-600 hover:bg-gray-50"
+              // }`}
+              className={`flex items-center gap-2 px-5 py-2 rounded-full text-main ${
+                activeButtons === "all" ? "bg-90" : "bg-95"
               }`}
               onClick={() => handleButtons("all")}
             >
@@ -123,10 +123,13 @@ const HomePage = () => {
             </button>
 
             <button
-              className={`flex items-center gap-2 px-5 py-2 rounded-full text-sm font-medium transition-all ${
-                activeButtons === "bookmark"
-                  ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-md"
-                  : "bg-white border border-gray-200 text-gray-600 hover:bg-gray-50"
+              // className={`flex items-center gap-2 px-5 py-2 rounded-full text-sm font-medium transition-all ${
+              //   activeButtons === "bookmark"
+              //     ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-md"
+              //     : "bg-white border border-gray-200 text-gray-600 hover:bg-gray-50"
+              // }`}
+              className={`flex items-center gap-2 px-5 py-2 rounded-full text-main ${
+                activeButtons === "bookmark" ? "bg-90" : "bg-95"
               }`}
               onClick={() => handleButtons("bookmark")}
             >
@@ -139,10 +142,11 @@ const HomePage = () => {
           {/* Add Note */}
           <button
             onClick={createNewNote}
-            className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-6 py-2.5 rounded-full shadow-lg transition-all hover:scale-105"
+            // className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-6 py-2.5 rounded-full shadow-lg transition-all hover:scale-105"
+            className="primary rounded px-2 py-2 text-gray-50"
           >
             <i className="fa-solid fa-circle-plus"></i>
-            <span className="font-medium">Add Note</span>
+            <span className="font-medium ms-2">Add Note</span>
           </button>
         </div>
 
@@ -154,7 +158,8 @@ const HomePage = () => {
                 <div
                   key={datas.id || index}
                   onClick={() => getSelectedNote(datas)}
-                  className="relative cursor-pointer bg-white p-6 rounded-2xl shadow-md hover:shadow-xl hover:-translate-y-1 transition-all border border-gray-100"
+                  // className="relative cursor-pointer bg-white p-6 rounded-2xl shadow-md hover:shadow-xl hover:-translate-y-1 transition-all border border-gray-100"
+                  className="bg-card p-6 rounded-2xl"
                 >
                   {datas.bookmarked && (
                     <div className="absolute right-4 top-4 text-yellow-500">
@@ -163,16 +168,22 @@ const HomePage = () => {
                   )}
 
                   <div className="mb-4">
-                    <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+                    <h3
+                      // className="text-lg font-semibold text-gray-900 flex items-center gap-2"
+                      className="title flex items-center gap-2"
+                    >
                       <i className="fa-regular fa-note-sticky text-blue-500"></i>
                       {datas.title || "Untitled"}
                     </h3>
-                    <p className="mt-2 text-gray-600 line-clamp-3 text-sm leading-relaxed">
+                    <p
+                      // className="mt-2 text-gray-600 line-clamp-3 text-sm leading-relaxed"
+                      className="sub-title"
+                    >
                       {datas.content}
                     </p>
                   </div>
 
-                  <p className="text-xs text-gray-400 flex items-center gap-1">
+                  <p className="text-xs text-gray-400 flex items-center gap-1 less-text">
                     <i className="fa-regular fa-clock"></i>
                     {formatDate(datas.updatedAt)}
                   </p>

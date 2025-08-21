@@ -7,3 +7,140 @@
   justify-content: center;
   align-items: center;
 }
+
+:root {
+  /* hsl (fallback color) */
+  --bg-dark: hsl(228 79% 2%);
+  --bg: hsl(222 55% 5%);
+  --bg-light: hsl(220 35% 10%);
+  --text: hsl(220 100% 98%);
+  --text-muted: hsl(220 35% 73%);
+  --text-more-muted: hsl(220 35% 60%);
+  --highlight: hsl(220 20% 42%);
+  --border: hsl(220 26% 31%);
+  --border-muted: hsl(220 37% 20%);
+  --primary: hsl(220 78% 76%);
+  --primary-hover: hsl(220 78% 60%);
+  --secondary: hsl(40 53% 60%);
+  --ternary: hsl(190 60% 60%);
+  --ternary-hover: hsl(190 60% 50%);
+  --danger: hsl(9 26% 64%);
+  --warning: hsl(52 19% 57%);
+  --success: hsl(146 17% 59%);
+  --info: hsl(217 28% 65%);
+  /* oklch */
+  --bg-dark: oklch(0.1 0.025 264);
+  --bg: oklch(0.15 0.025 264);
+  --bg-light: oklch(0.2 0.025 264);
+  --text: oklch(0.96 0.05 264);
+  --text-muted: oklch(0.76 0.05 264);
+  --highlight: oklch(0.5 0.05 264);
+  --border: oklch(0.4 0.05 264);
+  --border-muted: oklch(0.3 0.05 264);
+  --primary: oklch(0.76 0.1 264);
+  --secondary: oklch(0.76 0.1 84);
+  --danger: oklch(0.7 0.05 30);
+  --warning: oklch(0.7 0.05 100);
+  --success: oklch(0.7 0.05 160);
+  --info: oklch(0.7 0.05 260);
+
+  --gradient: linear-gradient(0deg, var(--bg) 95%, var(--bg-light));
+  --gradient-hover: linear-gradient(0deg, var(--bg), var(--bg-light));
+  --shadow: 0px 4px 4px #00000030, 0px 12px 12px #00000015;
+}
+body.light {
+  /* hsl (fallback color) */
+  --bg-dark: hsl(220 59% 91%);
+  --bg: hsl(220 100% 97%);
+  --bg-light: hsl(220 100% 100%);
+  --text: hsl(226 85% 7%);
+  --text-muted: hsl(220 26% 31%);
+  --text-more-muted: hsl(220 26% 50%);
+  --highlight: hsl(220 100% 100%);
+  --border: hsl(220 19% 53%);
+  --border-muted: hsl(220 27% 65%);
+  --primary: hsl(221 49% 33%);
+  --secondary: hsl(44 100% 14%);
+  --ternary: hsl(190 40% 40%);
+  --ternary-hover: hsl(190 40% 35%);
+  --danger: hsl(9 21% 41%);
+  --warning: hsl(52 23% 34%);
+  --success: hsl(147 19% 36%);
+  --info: hsl(217 22% 41%);
+  /* oklch */
+  --bg-dark: oklch(0.92 0.025 264);
+  --bg: oklch(0.96 0.025 264);
+  --bg-light: oklch(1 0.025 264);
+  --text: oklch(0.15 0.05 264);
+  --text-muted: oklch(0.4 0.05 264);
+  --highlight: oklch(1 0.05 264);
+  --border: oklch(0.6 0.05 264);
+  --border-muted: oklch(0.7 0.05 264);
+  --primary: oklch(0.4 0.1 264);
+  --secondary: oklch(0.4 0.1 84);
+  --danger: oklch(0.5 0.05 30);
+  --warning: oklch(0.5 0.05 100);
+  --success: oklch(0.5 0.05 160);
+  --info: oklch(0.5 0.05 260);
+
+  --gradient: linear-gradient(0deg, var(--bg) 95%, var(--bg-light));
+  --gradient-hover: linear-gradient(0deg, var(--bg), var(--bg-light));
+}
+body {
+  background: var(--bg-dark);
+  color: var(--text);
+}
+.bg-95 {
+  background: var(--bg);
+}
+.bg-90 {
+  background: var(--bg-light);
+}
+.text-main {
+  color: var(--text);
+}
+.text-second {
+  color: var(--text-muted);
+}
+.text-third {
+  color: var(--text-more-muted);
+}
+.bg-card {
+  /* background: var(--bg); */
+  background: var(--gradient);
+  border: var(--border);
+  border-top: 1px solid var(--highlight);
+  box-shadow: var(--shadow);
+}
+.bg-card:hover {
+  background: var(--gradient-hover);
+}
+.title {
+  font-size: 18px;
+  color: var(--text);
+}
+.sub-title {
+  font-size: 16px;
+  color: var(--text-muted);
+}
+.less-text {
+  font-size: 12px;
+  color: var(--text-more-muted);
+}
+
+.primary {
+  background: var(--primary);
+}
+.primary.btn:hover {
+  background: var(--primary-hover);
+}
+.secondry {
+  background: var(--secondary);
+}
+.ternary {
+  background: var(--ternary);
+  color: var(--text);
+}
+.ternary.btn:hover {
+  background: var(--ternary-hover);
+}

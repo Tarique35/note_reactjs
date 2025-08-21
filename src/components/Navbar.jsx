@@ -1,12 +1,25 @@
-import React from "react";
+import React, { useContext, useEffect, useState } from "react";
 import profilePhoto from "../img/portfolio2.jpg";
 import { useNavigate } from "react-router-dom";
+import NoteContext from "../NoteContext";
 
 const Navbar = () => {
+  const { userDetails } = useContext(NoteContext);
   const navigate = useNavigate();
 
+  const [theme, setTheme] = useState("dark"); // default dark
+
+  // Apply theme class to body
+  useEffect(() => {
+    if (theme === "light") {
+      document.body.classList.add("light");
+    } else {
+      document.body.classList.remove("light");
+    }
+  }, [theme]);
+
   return (
-    <header className="mx-4 mt-4 flex flex-col md:flex-row items-center md:justify-between gap-3 md:gap-0">
+    <header className="mx-4 pt-4 flex flex-col md:flex-row items-center md:justify-between gap-3 md:gap-0">
       {/* Left: avatar + name */}
       <div className="flex items-center gap-3">
         <img
@@ -16,7 +29,7 @@ const Navbar = () => {
           decoding="async"
           className="w-16 h-16 rounded-full border object-cover"
         />
-        <h5 className="text-lg font-medium">Tarique Ansari</h5>
+        <h5 className="text-lg font-medium">{userDetails?.name}</h5>
       </div>
 
       {/* Center: title */}
@@ -24,12 +37,20 @@ const Navbar = () => {
 
       {/* Right: small subtitle */}
       {/* <div className="text-sm text-gray-600">Created by Tarique Ansari</div> */}
-      <div
-        onClick={() => {
-          navigate("/signup");
-        }}
-      >
-        <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+
+      <div>
+        <i
+          onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+          class="fa-regular fa-moon-stars cursor-pointer"
+          style={{ fontSize: "28px" }}
+        ></i>
+        <button
+          onClick={() => {
+            navigate("/signup");
+          }}
+          // className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+          className="ms-4 py-2 px-4 rounded secondry text-[16px] text-gray-50 cursor-pointer"
+        >
           Signup
         </button>
       </div>

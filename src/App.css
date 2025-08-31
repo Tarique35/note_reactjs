@@ -112,6 +112,13 @@ body {
   border-top: 1px solid var(--highlight);
   box-shadow: var(--shadow);
 }
+.bg-card-withoutH {
+  /* background: var(--bg); */
+  background: var(--gradient);
+  border: var(--border);
+  border-top: 1px solid var(--highlight);
+  box-shadow: var(--shadow);
+}
 .bg-card:hover {
   background: var(--gradient-hover);
 }

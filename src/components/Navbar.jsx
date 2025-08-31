@@ -2,21 +2,23 @@ import React, { useContext, useEffect, useState } from "react";
 import profilePhoto from "../img/portfolio2.jpg";
 import { useNavigate } from "react-router-dom";
 import NoteContext from "../NoteContext";
+import { applyTheme, getTheme, toggleTheme } from "../../functions";
 
 const Navbar = () => {
-  const { userDetails } = useContext(NoteContext);
+  const { userDetails, theme, setTheme, chatVisible, setChatVisible } =
+    useContext(NoteContext);
   const navigate = useNavigate();
 
-  const [theme, setTheme] = useState("dark"); // default dark
-
-  // Apply theme class to body
   useEffect(() => {
-    if (theme === "light") {
-      document.body.classList.add("light");
-    } else {
-      document.body.classList.remove("light");
-    }
+    applyTheme(theme); // apply on mount
   }, [theme]);
+
+  const currentTheme = getTheme();
+
+  const handleToggle = () => {
+    const next = toggleTheme();
+    setTheme(next); // just updates UI label, not driving theme
+  };
 
   return (
     <header className="mx-4 pt-4 flex flex-col md:flex-row items-center md:justify-between gap-3 md:gap-0">
@@ -38,11 +40,19 @@ const Navbar = () => {
       {/* Right: small subtitle */}
       {/* <div className="text-sm text-gray-600">Created by Tarique Ansari</div> */}
 
-      <div>
+      <div className="flex flex-row items-center">
         <i
-          onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-          class="fa-regular fa-moon-stars cursor-pointer"
-          style={{ fontSize: "28px" }}
+          class="fa-light fa-microchip-ai text-[26px] me-3 cursor-pointer"
+          onClick={() => setChatVisible(!chatVisible)}
+        ></i>
+        <i
+          onClick={() => handleToggle()}
+          className={`cursor-pointer ${
+            currentTheme === "light"
+              ? "fa-regular fa-moon-stars "
+              : "fa-light fa-sun-bright"
+          }`}
+          style={{ fontSize: "26px" }}
         ></i>
         <button
           onClick={() => {

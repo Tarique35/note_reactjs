@@ -281,9 +281,9 @@ const NotePage = () => {
         </div>
 
         {/* Note Editor */}
-        <div className="bg-white shadow-lg rounded-xl p-6 border border-gray-100">
+        <div className="bg-card shadow-lg rounded-xl p-6 border border-gray-100">
           {/* Title */}
-          <label className="block text-sm font-medium text-gray-600 mb-1">
+          <label className="sub-title mb-1">
             Title
           </label>
           <input
@@ -291,18 +291,18 @@ const NotePage = () => {
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             placeholder="Enter a title..."
-            className="w-full text-2xl font-semibold border-b border-gray-300 focus:border-blue-500 focus:outline-none py-2 mb-6"
+            className="w-full title border-b border-gray-300 focus:border-blue-500 focus:outline-none py-2 mb-6"
           />
 
           {/* Content */}
-          <label className="block text-sm font-medium text-gray-600 mb-1">
+          <label className="sub-title mb-1">
             Content
           </label>
           <textarea
             value={noteText}
             onChange={(e) => setNoteText(e.target.value)}
             placeholder="Write your note here..."
-            className="w-full min-h-[60vh] p-4 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 resize-none text-base leading-relaxed"
+            className="w-full min-h-[60vh] p-4 border border-gray-200 rounded-lg focus:outline-none focus:border-blue-500 resize-none leading-relaxed title"
           ></textarea>
         </div>
 

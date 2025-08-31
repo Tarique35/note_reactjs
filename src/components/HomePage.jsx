@@ -9,11 +9,15 @@ const HomePage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const initialButtonValue = searchParams.get("value") || "all"; // Default to "all"
   const [activeButtons, setActiveButtons] = useState(initialButtonValue);
-  const [noteData, setNoteData] = useState([]);
+  const { loca, tokenName, noteToken, chatVisible, setChatVisible } =
+    useContext(NoteContext);
   const location = useLocation();
   const navigate = useNavigate();
+  const [noteData, setNoteData] = useState([]);
 
-  const { loca, tokenName, noteToken } = useContext(NoteContext);
+  // AI Chatbot State
+  const [messages, setMessages] = useState([]);
+  const [userInput, setUserInput] = useState("");
 
   useEffect(() => {
     // Ensure the query param exists and keep local active state in sync
@@ -99,6 +103,21 @@ const HomePage = () => {
     }
   };
 
+  // Handle user input and generate AI response
+  const handleUserInput = () => {
+    if (userInput.trim()) {
+      setMessages([...messages, { sender: "user", text: userInput }]);
+      // Simulate AI response (replace with actual AI logic later)
+      setTimeout(() => {
+        setMessages((prevMessages) => [
+          ...prevMessages,
+          { sender: "ai", text: "I'm here to help! Ask me anything." },
+        ]);
+      }, 1000);
+      setUserInput(""); // Clear input after sending
+    }
+  };
+
   return (
     <div className="min-h-screen">
       <Navbar />
@@ -146,7 +165,7 @@ const HomePage = () => {
             className="primary rounded px-2 py-2 text-gray-50"
           >
             <i className="fa-solid fa-circle-plus"></i>
-            <span className="font-medium ms-2">Add Note</span>
+            <span className="font-medium ms-2 cursor-pointer">Add Note</span>
           </button>
         </div>
 
@@ -159,10 +178,10 @@ const HomePage = () => {
                   key={datas.id || index}
                   onClick={() => getSelectedNote(datas)}
                   // className="relative cursor-pointer bg-white p-6 rounded-2xl shadow-md hover:shadow-xl hover:-translate-y-1 transition-all border border-gray-100"
-                  className="bg-card p-6 rounded-2xl"
+                  className="bg-card p-6 rounded-2xl relative"
                 >
                   {datas.bookmarked && (
-                    <div className="absolute right-4 top-4 text-yellow-500">
+                    <div className="absolute right-[25px] text-yellow-500">
                       <i className="fa-solid fa-thumbtack"></i>
                     </div>
                   )}
@@ -202,6 +221,76 @@ const HomePage = () => {
           )}
         </div>
       </div>
+      {/* AI Chatbot Section */}
+      {chatVisible && (
+        <div className="fixed bottom-10 right-10 bg-card-withoutH p-4 rounded-lg shadow-lg w-80 h-96 flex flex-col">
+          {/* Close and Clear buttons */}
+          <div className="flex justify-between mb-4">
+            {/* Clear Button */}
+            <button
+              onClick={() => setMessages([])} // Clear chat history
+              className="text-gray-600 hover:text-gray-800 text-xl"
+            >
+              <i className="fa-solid fa-trash-alt"></i> {/* Clear icon */}
+            </button>
+            {/* Close Button */}
+            <button
+              onClick={() => setChatVisible(false)} // Close chat
+              className="text-gray-600 hover:text-gray-800 text-xl"
+            >
+              <i className="fa-solid fa-times"></i> {/* Close icon */}
+            </button>
+          </div>
+
+          <div className="flex-grow overflow-auto mb-4">
+            {/* AI Introduction Message */}
+            {messages.length === 0 && (
+              <div className="mb-4 text-gray-600 text-sm">
+                <div className="inline-block px-4 py-2 rounded-lg bg-gray-200 text-black">
+                  <i className="fa-regular fa-smile"></i> Hello! I’m your AI
+                  assistant. You can ask me anything about your notes or get
+                  help with tasks. What would you like to do today?
+                </div>
+              </div>
+            )}
+
+            {/* Existing messages */}
+            {messages.map((msg, index) => (
+              <div
+                key={index}
+                className={`mb-2 ${msg.sender === "user" ? "text-right" : ""}`}
+              >
+                <div
+                  className={`inline-block px-4 py-2 rounded-lg ${
+                    msg.sender === "user"
+                      ? "bg-blue-500 text-white"
+                      : "bg-gray-200 text-black"
+                  }`}
+                >
+                  {msg.text}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Input Area */}
+          <div className="flex items-center gap-2">
+            <input
+              type="text"
+              value={userInput}
+              onChange={(e) => setUserInput(e.target.value)}
+              className="flex-grow p-2 border rounded-lg"
+              placeholder="Ask something..."
+            />
+            <button
+              onClick={handleUserInput}
+              className="primary rounded px-2 py-2 text-gray-50"
+            >
+              Send
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

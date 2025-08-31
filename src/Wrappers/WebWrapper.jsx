@@ -3,12 +3,15 @@ import { Outlet } from "react-router-dom";
 import NoteContext from "../NoteContext";
 import AppProperties from "../AppProperties";
 import axios from "axios";
+import { getTheme } from "../../functions";
 
 const WebWrapper = () => {
   const loca = AppProperties.loca;
   const tokenName = AppProperties.tokenName;
 
+  const [theme, setTheme] = useState(getTheme());
   const [userDetails, setUserDetails] = useState();
+  const [chatVisible, setChatVisible] = useState(false);
 
   const getUserDetail = async () => {
     await axios
@@ -31,7 +34,18 @@ const WebWrapper = () => {
 
   return (
     <>
-      <NoteContext.Provider value={{ loca, tokenName, noteToken, userDetails }}>
+      <NoteContext.Provider
+        value={{
+          loca,
+          tokenName,
+          noteToken,
+          userDetails,
+          theme,
+          setTheme,
+          chatVisible,
+          setChatVisible,
+        }}
+      >
         <Outlet />
       </NoteContext.Provider>
     </>

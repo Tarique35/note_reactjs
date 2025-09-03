@@ -19,8 +19,17 @@ const HomePage = () => {
   const [isFullScreen, setIsFullScreen] = useState(false);
   const nodeRef = useRef(null);
 
+  // Helper to get/set chat from localStorage
+  const getStoredChat = () => {
+    try {
+      const stored = localStorage.getItem("aiChat");
+      return stored ? JSON.parse(stored) : [];
+    } catch {
+      return [];
+    }
+  };
   // AI Chatbot State
-  const [messages, setMessages] = useState([]);
+  const [messages, setMessages] = useState(getStoredChat());
   const [userInput, setUserInput] = useState("");
   const [provider, setProvider] = useState("groq"); // default to Groq
 
@@ -35,6 +44,15 @@ const HomePage = () => {
     setActiveButtons(initialButtonValue);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams, initialButtonValue]);
+
+  const setStoredChat = (messages) => {
+    localStorage.setItem("aiChat", JSON.stringify(messages));
+  };
+
+  // Use effect to sync state with localStorage whenever it changes
+  useEffect(() => {
+    setStoredChat(messages);
+  }, [messages]);
 
   // Utility: Remove <think> ... </think> blocks and markdown fences
   const cleanResponse = (text) => {
@@ -141,10 +159,10 @@ Format:
     }
   };
   // Function for Groq Cloud
-  const callGroqModel = async (currentMessages) => {
+  const callGroqModel = async (currentMessages, aiIndex) => {
     setLoading(true);
     try {
-      const response = await fetch(
+      const res = await fetch(
         "https://api.groq.com/openai/v1/chat/completions",
         {
           method: "POST",
@@ -161,65 +179,135 @@ Format:
           }),
         }
       );
-
-      const data = await response.json();
-      let aiResponse = data.choices?.[0]?.message?.content || "No response";
-      aiResponse = cleanResponse(aiResponse);
-
-      setMessages((prev) => [...prev, { sender: "ai", text: "" }]);
-      await streamResponse(aiResponse);
+      const data = await res.json();
+      const aiResponse = cleanResponse(
+        data.choices?.[0]?.message?.content || "No response"
+      );
+      await streamResponse(aiResponse, aiIndex);
     } catch (err) {
       console.error(err);
-      setMessages((prev) => [
-        ...prev,
-        { sender: "ai", text: "⚠️ Groq API error!" },
-      ]);
+      setMessages((prev) => {
+        const updated = [...prev];
+        if (updated[aiIndex])
+          updated[aiIndex] = { sender: "ai", text: "⚠️ Groq API error!" };
+        return updated;
+      });
     } finally {
       setLoading(false);
     }
   };
+
   // Function for OpenRouter
-  const callOpenRouterModel = async (currentMessages) => {
+  const callOpenRouterModel = async (currentMessages, aiIndex) => {
     setLoading(true);
     try {
-      const response = await fetch(
-        "https://openrouter.ai/api/v1/chat/completions",
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${OPENROUTER_API_KEY}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            model: "deepseek/deepseek-r1-0528:free",
-            messages: currentMessages,
-          }),
-        }
+      const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${OPENROUTER_API_KEY}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          model: "deepseek/deepseek-r1-0528:free",
+          messages: currentMessages,
+        }),
+      });
+      const data = await res.json();
+      const aiResponse = cleanResponse(
+        data.choices?.[0]?.message?.content || "No response"
       );
-
-      const data = await response.json();
-      let aiResponse = data.choices?.[0]?.message?.content || "No response";
-      aiResponse = cleanResponse(aiResponse);
-
-      setMessages((prev) => [...prev, { sender: "ai", text: "" }]);
-      await streamResponse(aiResponse);
+      await streamResponse(aiResponse, aiIndex);
     } catch (err) {
       console.error(err);
-      setMessages((prev) => [
-        ...prev,
-        { sender: "ai", text: "⚠️ OpenRouter API error!" },
-      ]);
+      setMessages((prev) => {
+        const updated = [...prev];
+        if (updated[aiIndex])
+          updated[aiIndex] = { sender: "ai", text: "⚠️ OpenRouter API error!" };
+        return updated;
+      });
     } finally {
       setLoading(false);
     }
   };
 
   // Send user input
+  // const onSend = async () => {
+  //   if (!userInput.trim()) return;
+
+  //   const userMsg = { sender: "user", text: userInput };
+  //   setMessages((prev) => [...prev, userMsg]);
+  //   setUserInput("");
+  //   setLoading(true);
+
+  //   try {
+  //     const intentData = await detectIntent(userInput);
+
+  //     if (intentData.intent === "notes") {
+  //       const matches = noteData.filter((note) =>
+  //         intentData.keywords.some(
+  //           (kw) =>
+  //             note.title.toLowerCase().includes(kw.toLowerCase()) ||
+  //             note.content.toLowerCase().includes(kw.toLowerCase())
+  //         )
+  //       );
+
+  //       if (matches.length === 0) {
+  //         setMessages((prev) => [
+  //           ...prev,
+  //           {
+  //             sender: "ai",
+  //             text: "⚠️ I couldn’t find any notes matching your query.",
+  //           },
+  //         ]);
+  //       } else {
+  //         setMessages((prev) => [
+  //           ...prev,
+  //           { sender: "ai-note", notes: matches },
+  //         ]);
+  //         const summary = await summarizeNotes(matches);
+  //         setMessages((prev) => [...prev, { sender: "ai", text: summary }]);
+  //       }
+  //     } else {
+  //       // general AI chat fallback
+  //       const chatHistory = [
+  //         ...messages.map((msg) => ({
+  //           role: msg.sender === "user" ? "user" : "assistant",
+  //           content: msg.text,
+  //         })),
+  //         { role: "user", content: userInput },
+  //       ];
+
+  //       if (provider === "groq") {
+  //         await callGroqModel(chatHistory);
+  //       } else {
+  //         await callOpenRouterModel(chatHistory);
+  //       }
+  //     }
+  //   } catch (err) {
+  //     console.error(err);
+  //     setMessages((prev) => [
+  //       ...prev,
+  //       {
+  //         sender: "ai",
+  //         text: "⚠️ Something went wrong while processing your query.",
+  //       },
+  //     ]);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
   const onSend = async () => {
     if (!userInput.trim()) return;
 
     const userMsg = { sender: "user", text: userInput };
-    setMessages((prev) => [...prev, userMsg]);
+
+    // Add user message
+    setMessages((prev) => {
+      const updated = [...prev, userMsg];
+      localStorage.setItem("aiChat", JSON.stringify(updated));
+      return updated;
+    });
+
     setUserInput("");
     setLoading(true);
 
@@ -227,6 +315,7 @@ Format:
       const intentData = await detectIntent(userInput);
 
       if (intentData.intent === "notes") {
+        // Filter notes
         const matches = noteData.filter((note) =>
           intentData.keywords.some(
             (kw) =>
@@ -236,49 +325,88 @@ Format:
         );
 
         if (matches.length === 0) {
-          setMessages((prev) => [
-            ...prev,
-            {
-              sender: "ai",
-              text: "⚠️ I couldn’t find any notes matching your query.",
-            },
-          ]);
+          // No matching notes
+          setMessages((prev) => {
+            const updated = [
+              ...prev,
+              {
+                sender: "ai",
+                text: "⚠️ I couldn’t find any notes matching your query.",
+              },
+            ];
+            localStorage.setItem("aiChat", JSON.stringify(updated));
+            return updated;
+          });
         } else {
+          // Add ai-note bubble
           setMessages((prev) => [
             ...prev,
             { sender: "ai-note", notes: matches },
           ]);
-          const summary = await summarizeNotes(matches);
-          setMessages((prev) => [...prev, { sender: "ai", text: summary }]);
+
+          // Add an empty AI bubble for streaming the summary
+          setMessages((prev) => {
+            const updated = [...prev, { sender: "ai", text: "" }];
+            const aiIndex = updated.length - 1;
+
+            // Stream the summary into this bubble
+            summarizeNotes(matches).then((summary) =>
+              streamResponse(summary, aiIndex)
+            );
+
+            return updated;
+          });
         }
       } else {
-        // general AI chat fallback
-        const chatHistory = [
-          ...messages.map((msg) => ({
-            role: msg.sender === "user" ? "user" : "assistant",
-            content: msg.text,
-          })),
-          { role: "user", content: userInput },
-        ];
+        // General AI chat
+        setMessages((prev) => {
+          const chatHistory = [
+            ...prev.map((msg) => ({
+              role: msg.sender === "user" ? "user" : "assistant",
+              content: msg.text,
+            })),
+            { role: "user", content: userInput },
+          ];
 
-        if (provider === "groq") {
-          await callGroqModel(chatHistory);
-        } else {
-          await callOpenRouterModel(chatHistory);
-        }
+          // Add empty AI bubble
+          const updated = [...prev, { sender: "ai", text: "" }];
+          const aiIndex = updated.length - 1;
+
+          // Call AI model and stream directly into the bubble
+          if (provider === "groq") {
+            callGroqModel(chatHistory, aiIndex);
+          } else {
+            callOpenRouterModel(chatHistory, aiIndex);
+          }
+
+          return updated;
+        });
       }
     } catch (err) {
-      console.error(err);
-      setMessages((prev) => [
-        ...prev,
-        {
-          sender: "ai",
-          text: "⚠️ Something went wrong while processing your query.",
-        },
-      ]);
+      console.error("Error processing query:", err);
+      setMessages((prev) => {
+        const updated = [
+          ...prev,
+          {
+            sender: "ai",
+            text: "⚠️ Something went wrong while processing your query.",
+          },
+        ];
+        localStorage.setItem("aiChat", JSON.stringify(updated));
+        return updated;
+      });
     } finally {
       setLoading(false);
     }
+  };
+
+  // When AI finds matching notes
+  const addMatchingNotes = (foundNotes) => {
+    const noteMsg = {
+      sender: "ai-note",
+      notes: foundNotes, // pass full notes
+    };
+    setMessages((prev) => [...prev, noteMsg]);
   };
 
   const handleButtons = (value) => {
@@ -409,13 +537,15 @@ Format:
   };
 
   // Streaming effect
-  const streamResponse = async (fullText) => {
+  const streamResponse = async (fullText, aiIndex) => {
     let current = "";
     for (const char of fullText) {
       current += char;
       setMessages((prev) => {
         const updated = [...prev];
-        updated[updated.length - 1] = { sender: "ai", text: current };
+        if (updated[aiIndex])
+          updated[aiIndex] = { sender: "ai", text: current };
+        localStorage.setItem("aiChat", JSON.stringify(updated));
         return updated;
       });
       await new Promise((r) => setTimeout(r, 15));
@@ -526,6 +656,7 @@ Format:
         </div>
       </div>
       {/* AI Chatbot Section */}
+      {/* AI Chatbot Section */}
       {chatVisible && (
         <div className="fixed inset-0 z-50 pointer-events-none">
           <Draggable
@@ -536,10 +667,10 @@ Format:
           >
             <div
               ref={nodeRef}
-              className={`absolute bg-card-withoutH p-4 rounded-lg shadow-lg flex flex-col cursor-move pointer-events-auto transition-all duration-300 ease-in-out ${
+              className={`absolute p-4 rounded-lg shadow-lg flex flex-col cursor-move pointer-events-auto transition-all duration-300 ease-in-out ${
                 isFullScreen
-                  ? "inset-0 w-full h-full"
-                  : "bottom-10 right-10 w-96 h-[600px]"
+                  ? "inset-0 w-full h-full bg-card-withoutH"
+                  : "bottom-10 right-10 w-96 h-[600px] bg-card-withoutH"
               }`}
             >
               {/* Header */}
@@ -556,7 +687,6 @@ Format:
                 </select>
 
                 <div className="flex gap-3 items-center">
-                  {/* Fullscreen Toggle */}
                   <button
                     onClick={() => setIsFullScreen(!isFullScreen)}
                     className="text-gray-600 hover:text-gray-800 text-xl"
@@ -570,7 +700,6 @@ Format:
                     ></i>
                   </button>
 
-                  {/* Clear Chat */}
                   <button
                     onClick={() => setMessages([])}
                     className="text-gray-600 hover:text-gray-800 text-xl"
@@ -578,7 +707,6 @@ Format:
                     <i className="fa-solid fa-trash-alt"></i>
                   </button>
 
-                  {/* Close Chat */}
                   <button
                     onClick={() => setChatVisible(false)}
                     className="text-gray-600 hover:text-gray-800 text-xl"
@@ -598,34 +726,40 @@ Format:
                       </div>
                     )}
                     {msg.sender === "ai" && (
-                      <div className="inline-block px-4 py-2 rounded-lg bg-gray-200 text-black">
-                        {msg.text}
+                      <div className="inline-block px-4 py-2 rounded-lg bg-gray-200 text-black dark:bg-bg-light dark:text-text">
+                        {cleanResponse(msg.text)}
                       </div>
                     )}
                     {msg.sender === "ai-note" && (
-                      <div className="bg-yellow-100 border-l-4 border-yellow-500 p-3 rounded mb-2">
-                        <p className="font-semibold">🔎 Matching Notes:</p>
-                        <ul className="list-disc list-inside">
-                          {msg.notes.map((n, idx) => (
-                            <li
-                              key={idx}
-                              className="cursor-pointer hover:bg-yellow-200 p-1 rounded"
-                              onClick={() => getSelectedNote(n)}
-                            >
-                              <span className="font-bold">{n.title}</span>:{" "}
-                              <span className="text-gray-700">
-                                {n.content.slice(0, 60)}...
-                              </span>
-                            </li>
-                          ))}
-                        </ul>
+                      <div className="ai-note-container p-3 rounded-lg border border-gray-500 bg-gray-700 text-white dark:bg-gray-800 dark:text-gray-200">
+                        <div className="text-sm font-semibold mb-2">
+                          🔎 Matching Notes:
+                        </div>
+                        {msg.notes.map((note, idx) => (
+                          <div
+                            key={idx}
+                            className="note-item p-2 mb-2 rounded-md cursor-pointer hover:bg-blue-500 hover:text-white transition-colors"
+                            onClick={() => getSelectedNote(note)}
+                          >
+                            <div className="font-semibold">{note.title}</div>
+                            <div className="text-sm text-gray-300 dark:text-gray-400 line-clamp-3">
+                              {note.content}
+                            </div>
+                          </div>
+                        ))}
+                        <div className="mt-2 text-sm text-gray-200 dark:text-gray-300">
+                          {msg.notes.length === 1
+                            ? "This note matches your query."
+                            : `These ${msg.notes.length} notes match your query.`}
+                        </div>
                       </div>
                     )}
                   </div>
                 ))}
+
                 {loading && (
                   <div className="mb-2">
-                    <div className="inline-block px-4 py-2 rounded-lg bg-gray-200 text-black animate-pulse">
+                    <div className="inline-block px-4 py-2 rounded-lg bg-gray-200 text-black animate-pulse dark:bg-bg-light dark:text-text">
                       <i className="fa-solid fa-ellipsis"></i> AI is typing...
                     </div>
                   </div>
@@ -643,7 +777,7 @@ Format:
                       onSend();
                     }
                   }}
-                  className="flex-grow p-2 border rounded-lg resize-none"
+                  className="flex-grow p-2 border rounded-lg resize-none bg-bg dark:bg-bg-light text-text dark:text-text"
                   placeholder="Ask something..."
                   rows={1}
                 />

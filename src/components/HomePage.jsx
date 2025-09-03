@@ -23,10 +23,8 @@ const HomePage = () => {
   const [userInput, setUserInput] = useState("");
   const [provider, setProvider] = useState("groq"); // default to Groq
 
-  const GROQ_API_KEY =
-    "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";
-  const OPENROUTER_API_KEY =
-    "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";
+  const GROQ_API_KEY = import.meta.env.VITE_GROQ_API_KEY;
+  const OPENROUTER_API_KEY = import.meta.env.VITE_OPENROUTER_API_KEY;
 
   useEffect(() => {
     // Ensure the query param exists and keep local active state in sync
